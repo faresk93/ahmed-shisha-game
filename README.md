@@ -11,6 +11,9 @@
 
 ---
 
+## DEMO
+https://faresk93.github.io/ahmed-shisha-game/
+
 ## 🎮 About The Game
 
 **Ahmed Chayech** (أحمد الشايش) is a fun, interactive shisha smoking simulator built with Three.js. Experience the authentic Tunisian café atmosphere with realistic 3D graphics, immersive sound effects, and hilarious Tunisian dialect expressions!
