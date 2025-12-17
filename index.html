@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>أحمد الشايش - Ahmed Chayech 💨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --gold: #D4AF37;
+            --gold-light: #F4E4BA;
+            --burgundy: #722F37;
+            --burgundy-dark: #4A1F24;
+            --smoke: rgba(200, 200, 200, 0.6);
+            --ember: #FF6B35;
+            --ember-glow: #FFD93D;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #1a0a0f 0%, #2d1f3d 50%, #1a0a0f 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            touch-action: manipulation;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* Decorative Pattern Overlay */
+        .pattern-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(114, 47, 55, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* UI Elements */
+        .game-ui {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            padding: 20px;
+            pointer-events: none;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .score-container {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(114, 47, 55, 0.3));
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 12px 24px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.2);
+        }
+
+        .score-label {
+            font-family: 'Lalezar', cursive;
+            font-size: 12px;
+            color: var(--gold-light);
+            opacity: 0.8;
+            letter-spacing: 1px;
+        }
+
+        .score-value {
+            font-family: 'Lalezar', cursive;
+            font-size: 36px;
+            color: var(--gold);
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            line-height: 1;
+        }
+
+        .combo-container {
+            text-align: left;
+        }
+
+        .combo-badge {
+            background: linear-gradient(135deg, var(--ember), var(--ember-glow));
+            border-radius: 30px;
+            padding: 8px 20px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .combo-badge.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .combo-text {
+            font-family: 'Lalezar', cursive;
+            font-size: 18px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Coal Heat Meter */
+        .heat-container {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .heat-label {
+            font-family: 'Lalezar', cursive;
+            font-size: 14px;
+            color: var(--gold-light);
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+        }
+
+        .heat-meter {
+            width: 24px;
+            height: 200px;
+            background: rgba(0,0,0,0.4);
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .heat-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80%;
+            background: linear-gradient(to top, var(--ember), var(--ember-glow), #FFE4B5);
+            border-radius: 10px;
+            transition: height 0.3s ease;
+        }
+
+        .heat-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent);
+            animation: heatGlow 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes heatGlow {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+
+        /* Tap Zone */
+        .tap-zone {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            pointer-events: auto;
+        }
+
+        .tap-button {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, var(--burgundy), var(--burgundy-dark));
+            border: 4px solid var(--gold);
+            box-shadow: 
+                0 0 30px rgba(212, 175, 55, 0.3),
+                inset 0 -5px 15px rgba(0,0,0,0.4),
+                inset 0 5px 15px rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .tap-button:active {
+            transform: scale(0.92);
+            box-shadow: 
+                0 0 50px rgba(255, 107, 53, 0.5),
+                inset 0 -2px 10px rgba(0,0,0,0.4),
+                inset 0 2px 10px rgba(255,255,255,0.1);
+        }
+
+        .tap-icon {
+            font-size: 40px;
+            margin-bottom: 4px;
+        }
+
+        .tap-text {
+            font-family: 'Lalezar', cursive;
+            font-size: 14px;
+            color: var(--gold-light);
+        }
+
+        /* Floating Messages */
+        .floating-msg {
+            position: fixed;
+            font-family: 'Lalezar', cursive;
+            font-size: 24px;
+            color: var(--gold);
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+            pointer-events: none;
+            z-index: 100;
+            animation: floatUp 1.5s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.3);
+            }
+        }
+
+        /* Start Screen */
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a0a0f 0%, #2d1f3d 50%, #1a0a0f 100%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .start-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .game-title {
+            font-family: 'Lalezar', cursive;
+            font-size: clamp(40px, 12vw, 72px);
+            color: var(--gold);
+            text-shadow: 
+                0 0 30px rgba(212, 175, 55, 0.5),
+                0 4px 0 var(--burgundy);
+            margin-bottom: 10px;
+            animation: titlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .game-subtitle {
+            font-family: 'Tajawal', sans-serif;
+            font-size: clamp(16px, 4vw, 24px);
+            color: var(--gold-light);
+            opacity: 0.8;
+            margin-bottom: 40px;
+        }
+
+        .shisha-emoji {
+            font-size: 100px;
+            margin: 20px 0;
+            animation: shishaFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes shishaFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .instructions {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin: 20px 0;
+            max-width: 350px;
+        }
+
+        .instruction-item {
+            color: var(--gold-light);
+            font-size: 16px;
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instruction-icon {
+            font-size: 24px;
+        }
+
+        .start-button {
+            font-family: 'Lalezar', cursive;
+            font-size: 28px;
+            color: white;
+            background: linear-gradient(145deg, var(--burgundy), var(--burgundy-dark));
+            border: 3px solid var(--gold);
+            border-radius: 50px;
+            padding: 15px 60px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        }
+
+        .start-button:hover, .start-button:active {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Tunisian Phrases */
+        .tunisian-phrase {
+            position: fixed;
+            left: 20px;
+            bottom: 150px;
+            font-family: 'Lalezar', cursive;
+            font-size: 18px;
+            color: var(--gold-light);
+            opacity: 0.6;
+            max-width: 150px;
+            text-align: center;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        /* High Score */
+        .high-score {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Lalezar', cursive;
+            font-size: 14px;
+            color: var(--gold-light);
+            opacity: 0.7;
+            z-index: 10;
+        }
+
+        /* Sound Toggle Button */
+        .sound-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.2);
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 30;
+            font-size: 24px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .sound-toggle:active {
+            transform: scale(0.9);
+        }
+
+        .sound-toggle.muted {
+            opacity: 0.5;
+        }
+
+        /* Coal Tap Button */
+        .coal-button {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #333, #1a1a1a);
+            border: 3px solid var(--ember);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .coal-button:active {
+            transform: translateY(-50%) scale(0.9);
+            box-shadow: 0 0 40px rgba(255, 107, 53, 0.6);
+        }
+
+        .coal-icon {
+            font-size: 32px;
+        }
+
+        /* Smoke Ring Counter */
+        .ring-counter {
+            position: fixed;
+            bottom: 170px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Lalezar', cursive;
+            font-size: 16px;
+            color: var(--smoke);
+            z-index: 10;
+        }
+
+        /* Perfect indicator */
+        .perfect-zone {
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 120px;
+            border: 3px dashed rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .perfect-label {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Lalezar', cursive;
+            font-size: 12px;
+            color: var(--gold);
+            opacity: 0.5;
+            white-space: nowrap;
+        }
+
+        /* Game Over Screen */
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 10, 15, 0.95);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .game-over.active {
+            display: flex;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .game-over-title {
+            font-family: 'Lalezar', cursive;
+            font-size: 36px;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-family: 'Lalezar', cursive;
+            font-size: 64px;
+            color: var(--ember-glow);
+            text-shadow: 0 0 30px rgba(255, 217, 61, 0.5);
+        }
+
+        .score-message {
+            font-family: 'Tajawal', sans-serif;
+            font-size: 20px;
+            color: var(--gold-light);
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Start Screen -->
+    <div class="start-screen" id="startScreen">
+        <div class="game-title">أحمد الشايش</div>
+        <div class="game-subtitle">Ahmed Chayech - لعبة الشيشة التونسية 💨</div>
+        <div class="shisha-emoji">🪬</div>
+        <div class="instructions">
+            <div class="instruction-item">
+                <span class="instruction-icon">👆</span>
+                <span>أنقر باش تشرب - Tap to smoke!</span>
+            </div>
+            <div class="instruction-item">
+                <span class="instruction-icon">🔥</span>
+                <span>سخن الفحم - Heat the coals!</span>
+            </div>
+            <div class="instruction-item">
+                <span class="instruction-icon">💨</span>
+                <span>اعمل حلقات دخان - Make smoke rings!</span>
+            </div>
+            <div class="instruction-item">
+                <span class="instruction-icon">⭐</span>
+                <span>كومبو = نقاط برشا!</span>
+            </div>
+        </div>
+        <button class="start-button" id="startButton">يلا نبداو! 🔥</button>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div class="game-over" id="gameOverScreen">
+        <div class="game-over-title">خلص الفحم! 😅</div>
+        <div class="final-score" id="finalScore">0</div>
+        <div class="score-message" id="scoreMessage">برافو عليك!</div>
+        <button class="start-button" id="restartButton">نعاود مرة أخرى 🔄</button>
+    </div>
+
+    <!-- Game Container -->
+    <div id="game-container">
+        <div id="canvas-container"></div>
+        <div class="pattern-overlay"></div>
+        
+        <!-- UI -->
+        <div class="game-ui">
+            <div class="top-bar">
+                <div class="score-container">
+                    <div class="score-label">النقاط</div>
+                    <div class="score-value" id="score">0</div>
+                </div>
+                <div class="combo-container">
+                    <div class="combo-badge" id="comboBadge">
+                        <span class="combo-text" id="comboText">x2 عظيم!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="high-score" id="highScore">أحسن نتيجة: 0</div>
+
+        <!-- Sound Toggle -->
+        <div class="sound-toggle" id="soundToggle">🔊</div>
+
+        <!-- Heat Meter -->
+        <div class="heat-container">
+            <div class="heat-label">الحرارة 🔥</div>
+            <div class="heat-meter">
+                <div class="heat-fill" id="heatFill"></div>
+            </div>
+        </div>
+
+        <!-- Coal Button -->
+        <div class="coal-button" id="coalButton">
+            <span class="coal-icon">🔥</span>
+        </div>
+
+        <!-- Perfect Zone -->
+        <div class="perfect-zone">
+            <div class="perfect-label">المنطقة الذهبية ⭐</div>
+        </div>
+
+        <!-- Tunisian Phrase -->
+        <div class="tunisian-phrase" id="tunisianPhrase">يا سلام!</div>
+
+        <!-- Smoke Ring Counter -->
+        <div class="ring-counter" id="ringCounter">حلقات: 0 💨</div>
+
+        <!-- Tap Zone -->
+        <div class="tap-zone">
+            <div class="tap-button" id="tapButton">
+                <span class="tap-icon">💨</span>
+                <span class="tap-text">أشرب!</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <script>
+        // ==================== SOUND SYSTEM ====================
+        class SoundManager {
+            constructor() {
+                this.initialized = false;
+                this.muted = false;
+            }
+
+            async init() {
+                if (this.initialized) return;
+                
+                await Tone.start();
+                
+                // Reverb for ambient feel
+                this.reverb = new Tone.Reverb({
+                    decay: 2,
+                    wet: 0.3
+                }).toDestination();
+                await this.reverb.generate();
+
+                // Bubble sound (water bubbling in shisha)
+                this.bubbleSynth = new Tone.MembraneSynth({
+                    pitchDecay: 0.05,
+                    octaves: 4,
+                    oscillator: { type: 'sine' },
+                    envelope: {
+                        attack: 0.001,
+                        decay: 0.2,
+                        sustain: 0.01,
+                        release: 0.3
+                    }
+                }).connect(this.reverb);
+                this.bubbleSynth.volume.value = -8;
+
+                // Smoke puff sound (breathy white noise)
+                this.puffNoise = new Tone.NoiseSynth({
+                    noise: { type: 'white' },
+                    envelope: {
+                        attack: 0.05,
+                        decay: 0.2,
+                        sustain: 0.05,
+                        release: 0.4
+                    }
+                }).toDestination();
+                this.puffNoise.volume.value = -20;
+
+                // Coal sizzle (filtered noise)
+                this.sizzleNoise = new Tone.NoiseSynth({
+                    noise: { type: 'brown' },
+                    envelope: {
+                        attack: 0.01,
+                        decay: 0.3,
+                        sustain: 0.1,
+                        release: 0.5
+                    }
+                }).toDestination();
+                this.sizzleFilter = new Tone.Filter(800, 'bandpass').toDestination();
+                this.sizzleNoise.connect(this.sizzleFilter);
+                this.sizzleNoise.volume.value = -15;
+
+                // Combo sound (pleasant chime)
+                this.comboSynth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: 'sine' },
+                    envelope: {
+                        attack: 0.01,
+                        decay: 0.3,
+                        sustain: 0.1,
+                        release: 0.8
+                    }
+                }).connect(this.reverb);
+                this.comboSynth.volume.value = -12;
+
+                // Perfect ring sound (magical sparkle)
+                this.perfectSynth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: 'triangle' },
+                    envelope: {
+                        attack: 0.01,
+                        decay: 0.5,
+                        sustain: 0.2,
+                        release: 1
+                    }
+                }).connect(this.reverb);
+                this.perfectSynth.volume.value = -10;
+
+                // UI Click sound
+                this.clickSynth = new Tone.MembraneSynth({
+                    pitchDecay: 0.01,
+                    octaves: 2,
+                    envelope: {
+                        attack: 0.001,
+                        decay: 0.1,
+                        sustain: 0,
+                        release: 0.1
+                    }
+                }).toDestination();
+                this.clickSynth.volume.value = -15;
+
+                // Game over sound
+                this.gameOverSynth = new Tone.Synth({
+                    oscillator: { type: 'sawtooth' },
+                    envelope: {
+                        attack: 0.01,
+                        decay: 0.5,
+                        sustain: 0.1,
+                        release: 1
+                    }
+                }).toDestination();
+                this.gameOverSynth.volume.value = -10;
+
+                // Ambient drone (optional background)
+                this.ambientSynth = new Tone.Synth({
+                    oscillator: { type: 'sine' },
+                    envelope: {
+                        attack: 2,
+                        decay: 1,
+                        sustain: 0.8,
+                        release: 3
+                    }
+                }).connect(this.reverb);
+                this.ambientSynth.volume.value = -30;
+
+                // Low warning sound
+                this.warningSynth = new Tone.Synth({
+                    oscillator: { type: 'square' },
+                    envelope: {
+                        attack: 0.01,
+                        decay: 0.1,
+                        sustain: 0.3,
+                        release: 0.2
+                    }
+                }).toDestination();
+                this.warningSynth.volume.value = -18;
+
+                this.initialized = true;
+                console.log('🔊 Sound system initialized!');
+            }
+
+            playBubble() {
+                if (!this.initialized || this.muted) return;
+                // Random bubble pitch for variety
+                const notes = ['G2', 'A2', 'B2', 'C3', 'D3'];
+                const note = notes[Math.floor(Math.random() * notes.length)];
+                this.bubbleSynth.triggerAttackRelease(note, '16n');
+                
+                // Multiple bubbles effect
+                setTimeout(() => {
+                    if (!this.muted) {
+                        const note2 = notes[Math.floor(Math.random() * notes.length)];
+                        this.bubbleSynth.triggerAttackRelease(note2, '32n');
+                    }
+                }, 50 + Math.random() * 100);
+            }
+
+            playPuff() {
+                if (!this.initialized || this.muted) return;
+                this.puffNoise.triggerAttackRelease('8n');
+            }
+
+            playSizzle() {
+                if (!this.initialized || this.muted) return;
+                this.sizzleNoise.triggerAttackRelease('4n');
+            }
+
+            playCombo(level) {
+                if (!this.initialized || this.muted) return;
+                // Higher combo = higher pitch chord
+                const chords = [
+                    ['C4', 'E4'],
+                    ['D4', 'F#4', 'A4'],
+                    ['E4', 'G#4', 'B4'],
+                    ['F4', 'A4', 'C5'],
+                    ['G4', 'B4', 'D5', 'F#5']
+                ];
+                const chord = chords[Math.min(level - 2, chords.length - 1)];
+                this.comboSynth.triggerAttackRelease(chord, '8n');
+            }
+
+            playPerfect() {
+                if (!this.initialized || this.muted) return;
+                // Magical arpeggio
+                const notes = ['C5', 'E5', 'G5', 'C6'];
+                notes.forEach((note, i) => {
+                    setTimeout(() => {
+                        if (!this.muted) this.perfectSynth.triggerAttackRelease(note, '16n');
+                    }, i * 80);
+                });
+            }
+
+            playClick() {
+                if (!this.initialized || this.muted) return;
+                this.clickSynth.triggerAttackRelease('C4', '32n');
+            }
+
+            playGameOver() {
+                if (!this.initialized || this.muted) return;
+                // Descending sad sound
+                const notes = ['C4', 'Bb3', 'Ab3', 'G3'];
+                notes.forEach((note, i) => {
+                    setTimeout(() => {
+                        if (!this.muted) this.gameOverSynth.triggerAttackRelease(note, '8n');
+                    }, i * 200);
+                });
+            }
+
+            playWarning() {
+                if (!this.initialized || this.muted) return;
+                this.warningSynth.triggerAttackRelease('E3', '16n');
+                setTimeout(() => {
+                    if (!this.muted) this.warningSynth.triggerAttackRelease('E3', '16n');
+                }, 150);
+            }
+
+            playStart() {
+                if (!this.initialized || this.muted) return;
+                // Ascending start sound
+                const notes = ['C4', 'E4', 'G4', 'C5'];
+                notes.forEach((note, i) => {
+                    setTimeout(() => {
+                        if (!this.muted) this.comboSynth.triggerAttackRelease(note, '16n');
+                    }, i * 100);
+                });
+            }
+
+            startAmbient() {
+                if (!this.initialized || this.muted) return;
+                // Soft ambient drone
+                this.ambientSynth.triggerAttack('C2');
+            }
+
+            stopAmbient() {
+                if (!this.initialized) return;
+                this.ambientSynth.triggerRelease();
+            }
+
+            toggleMute() {
+                this.muted = !this.muted;
+                if (this.muted) {
+                    Tone.Destination.mute = true;
+                } else {
+                    Tone.Destination.mute = false;
+                }
+                return this.muted;
+            }
+        }
+
+        const soundManager = new SoundManager();
+
+        // Game State
+        const gameState = {
+            score: 0,
+            combo: 0,
+            maxCombo: 0,
+            heat: 80,
+            rings: 0,
+            isPlaying: false,
+            highScore: parseInt(localStorage.getItem('ahmedChayechHighScore') || '0')
+        };
+
+        // Tunisian Phrases
+        const tunisianPhrases = {
+            smoke: [
+                "يا سلام! 💨",
+                "برشا بنين! 😎",
+                "هذي هي! 🔥",
+                "عسلامة الدخان! 💫",
+                "ماشي الحال! 👌",
+                "يعطيك الصحة! 💪",
+                "قوي برشا! 💨",
+                "هيا هيا! 🎉"
+            ],
+            combo: [
+                "كومبو خرافي! 🌟",
+                "ما شاء الله! ⭐",
+                "طبرقلي! 🔥",
+                "زيد زيد! 💪",
+                "بهي ياسر! 😍"
+            ],
+            perfect: [
+                "حلقة ذهبية! 🏆",
+                "عبقري! 🧠",
+                "محترف شيشة! 👑",
+                "يا ولدي! 🌟"
+            ],
+            cold: [
+                "الفحم يبرد! 🥶",
+                "سخن الفحم! 🔥",
+                "زيد حرارة! ⚠️"
+            ],
+            gameOver: [
+                "برد الفحم! 😅",
+                "المرة الجاية خير! 💪",
+                "حاول مرة أخرى! 🔄"
+            ]
+        };
+
+        // DOM Elements
+        const startScreen = document.getElementById('startScreen');
+        const startButton = document.getElementById('startButton');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const restartButton = document.getElementById('restartButton');
+        const scoreDisplay = document.getElementById('score');
+        const comboBadge = document.getElementById('comboBadge');
+        const comboText = document.getElementById('comboText');
+        const heatFill = document.getElementById('heatFill');
+        const tapButton = document.getElementById('tapButton');
+        const coalButton = document.getElementById('coalButton');
+        const tunisianPhrase = document.getElementById('tunisianPhrase');
+        const ringCounter = document.getElementById('ringCounter');
+        const highScoreDisplay = document.getElementById('highScore');
+        const finalScore = document.getElementById('finalScore');
+        const scoreMessage = document.getElementById('scoreMessage');
+        const soundToggle = document.getElementById('soundToggle');
+
+        // Three.js Setup
+        let scene, camera, renderer;
+        let shisha, smokeParticles = [], smokeRings = [];
+        let coalEmbers = [];
+
+        function initThreeJS() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 2, 6);
+            camera.lookAt(0, 1, 0);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setClearColor(0x000000, 0);
+            container.appendChild(renderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+
+            const pointLight = new THREE.PointLight(0xff6b35, 1.5, 10);
+            pointLight.position.set(0, 4, 2);
+            scene.add(pointLight);
+
+            const goldLight = new THREE.PointLight(0xd4af37, 0.8, 8);
+            goldLight.position.set(-2, 2, 3);
+            scene.add(goldLight);
+
+            // Create Shisha
+            createShisha();
+
+            // Create Coal Embers
+            createCoalEmbers();
+
+            // Handle Resize
+            window.addEventListener('resize', onWindowResize);
+
+            animate();
+        }
+
+        function createShisha() {
+            const shishaGroup = new THREE.Group();
+
+            // Base (water container) - Glass effect
+            const baseGeometry = new THREE.SphereGeometry(0.8, 32, 32);
+            const baseMaterial = new THREE.MeshPhongMaterial({
+                color: 0x2a4858,
+                transparent: true,
+                opacity: 0.7,
+                shininess: 100,
+                specular: 0x4a90d9
+            });
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.scale.y = 0.8;
+            base.position.y = 0;
+            shishaGroup.add(base);
+
+            // Water inside
+            const waterGeometry = new THREE.SphereGeometry(0.75, 32, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2);
+            const waterMaterial = new THREE.MeshPhongMaterial({
+                color: 0x1e90ff,
+                transparent: true,
+                opacity: 0.5,
+                shininess: 80
+            });
+            const water = new THREE.Mesh(waterGeometry, waterMaterial);
+            water.position.y = -0.1;
+            water.rotation.x = Math.PI;
+            shishaGroup.add(water);
+
+            // Stem
+            const stemGeometry = new THREE.CylinderGeometry(0.08, 0.12, 2.5, 16);
+            const stemMaterial = new THREE.MeshPhongMaterial({
+                color: 0xd4af37,
+                shininess: 150,
+                specular: 0xffffff
+            });
+            const stem = new THREE.Mesh(stemGeometry, stemMaterial);
+            stem.position.y = 1.6;
+            shishaGroup.add(stem);
+
+            // Decorative rings on stem
+            for (let i = 0; i < 3; i++) {
+                const ringGeometry = new THREE.TorusGeometry(0.12, 0.02, 8, 16);
+                const ringMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xb8860b,
+                    shininess: 200
+                });
+                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring.position.y = 0.8 + i * 0.8;
+                ring.rotation.x = Math.PI / 2;
+                shishaGroup.add(ring);
+            }
+
+            // Bowl (top)
+            const bowlGeometry = new THREE.CylinderGeometry(0.4, 0.25, 0.3, 16);
+            const bowlMaterial = new THREE.MeshPhongMaterial({
+                color: 0x722f37,
+                shininess: 60
+            });
+            const bowl = new THREE.Mesh(bowlGeometry, bowlMaterial);
+            bowl.position.y = 3;
+            shishaGroup.add(bowl);
+
+            // Coal tray
+            const trayGeometry = new THREE.CylinderGeometry(0.5, 0.5, 0.05, 16);
+            const trayMaterial = new THREE.MeshPhongMaterial({
+                color: 0xd4af37,
+                shininess: 150
+            });
+            const tray = new THREE.Mesh(trayGeometry, trayMaterial);
+            tray.position.y = 2.85;
+            shishaGroup.add(tray);
+
+            // Coal pieces on top
+            const coalGroup = new THREE.Group();
+            const coalGeometry = new THREE.BoxGeometry(0.15, 0.15, 0.15);
+            
+            for (let i = 0; i < 4; i++) {
+                const coalMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x1a1a1a,
+                    emissive: 0xff4500,
+                    emissiveIntensity: 0.5
+                });
+                const coal = new THREE.Mesh(coalGeometry, coalMaterial);
+                const angle = (i / 4) * Math.PI * 2;
+                coal.position.x = Math.cos(angle) * 0.2;
+                coal.position.z = Math.sin(angle) * 0.2;
+                coal.position.y = 3.2;
+                coal.rotation.set(Math.random(), Math.random(), Math.random());
+                coal.userData = { material: coalMaterial };
+                coalGroup.add(coal);
+            }
+            shishaGroup.add(coalGroup);
+            shishaGroup.userData.coals = coalGroup;
+
+            // Hose connector
+            const connectorGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.2, 8);
+            const connectorMaterial = new THREE.MeshPhongMaterial({ color: 0xd4af37 });
+            const connector = new THREE.Mesh(connectorGeometry, connectorMaterial);
+            connector.position.set(0.4, 0.5, 0);
+            connector.rotation.z = -Math.PI / 4;
+            shishaGroup.add(connector);
+
+            shishaGroup.position.y = -1;
+            scene.add(shishaGroup);
+            shisha = shishaGroup;
+        }
+
+        function createCoalEmbers() {
+            // Create ember particles around the coal area
+            const emberGeometry = new THREE.SphereGeometry(0.02, 8, 8);
+            
+            for (let i = 0; i < 20; i++) {
+                const emberMaterial = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color().setHSL(0.05, 1, 0.5 + Math.random() * 0.3),
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const ember = new THREE.Mesh(emberGeometry, emberMaterial);
+                ember.position.set(
+                    (Math.random() - 0.5) * 0.5,
+                    2.2 + Math.random() * 0.3,
+                    (Math.random() - 0.5) * 0.5
+                );
+                ember.userData = {
+                    velocity: new THREE.Vector3(
+                        (Math.random() - 0.5) * 0.02,
+                        0.02 + Math.random() * 0.03,
+                        (Math.random() - 0.5) * 0.02
+                    ),
+                    life: Math.random(),
+                    maxLife: 0.5 + Math.random() * 0.5
+                };
+                scene.add(ember);
+                coalEmbers.push(ember);
+            }
+        }
+
+        function createSmokeParticle(x, y, z) {
+            const geometry = new THREE.SphereGeometry(0.1 + Math.random() * 0.1, 8, 8);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0xcccccc,
+                transparent: true,
+                opacity: 0.6
+            });
+            const particle = new THREE.Mesh(geometry, material);
+            particle.position.set(x, y, z);
+            particle.userData = {
+                velocity: new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.03,
+                    0.03 + Math.random() * 0.02,
+                    (Math.random() - 0.5) * 0.03
+                ),
+                life: 1,
+                scale: 1
+            };
+            scene.add(particle);
+            smokeParticles.push(particle);
+        }
+
+        function createSmokeRing() {
+            const ringGeometry = new THREE.TorusGeometry(0.3, 0.08, 8, 32);
+            const ringMaterial = new THREE.MeshBasicMaterial({
+                color: 0xdddddd,
+                transparent: true,
+                opacity: 0.7
+            });
+            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+            ring.position.set(0, 2.5, 2);
+            ring.rotation.x = Math.PI / 2;
+            ring.userData = {
+                velocity: 0.04,
+                life: 1,
+                initialY: 2.5
+            };
+            scene.add(ring);
+            smokeRings.push(ring);
+            
+            gameState.rings++;
+            ringCounter.textContent = `حلقات: ${gameState.rings} 💨`;
+        }
+
+        function triggerSmoke() {
+            if (!gameState.isPlaying || gameState.heat <= 0) return;
+
+            // Play smoke sounds
+            soundManager.playBubble();
+            soundManager.playPuff();
+
+            // Create burst of smoke particles
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    createSmokeParticle(
+                        (Math.random() - 0.5) * 0.3,
+                        2.2,
+                        1.5 + Math.random() * 0.5
+                    );
+                }, i * 30);
+            }
+
+            // Create smoke ring with chance based on combo
+            if (Math.random() < 0.4 + (gameState.combo * 0.1)) {
+                createSmokeRing();
+            }
+
+            // Decrease heat
+            gameState.heat = Math.max(0, gameState.heat - 3);
+            updateHeatDisplay();
+
+            // Update score
+            const basePoints = 10;
+            const comboMultiplier = Math.max(1, gameState.combo);
+            const points = basePoints * comboMultiplier;
+            
+            gameState.score += points;
+            gameState.combo++;
+            gameState.maxCombo = Math.max(gameState.maxCombo, gameState.combo);
+
+            // Play combo sound
+            if (gameState.combo >= 2) {
+                soundManager.playCombo(gameState.combo);
+            }
+
+            updateScoreDisplay();
+            updateComboDisplay();
+            showFloatingMessage(`+${points}`, window.innerWidth / 2, window.innerHeight - 200);
+
+            // Show Tunisian phrase
+            if (gameState.combo > 5) {
+                showTunisianPhrase('combo');
+            } else {
+                showTunisianPhrase('smoke');
+            }
+
+            // Animate coal glow
+            if (shisha && shisha.userData.coals) {
+                shisha.userData.coals.children.forEach(coal => {
+                    coal.userData.material.emissiveIntensity = 1;
+                    setTimeout(() => {
+                        coal.userData.material.emissiveIntensity = 0.3 + (gameState.heat / 100) * 0.5;
+                    }, 200);
+                });
+            }
+
+            // Check for game over
+            if (gameState.heat <= 0) {
+                endGame();
+            }
+        }
+
+        function addHeat() {
+            if (!gameState.isPlaying) return;
+
+            // Play coal sizzle sound
+            soundManager.playSizzle();
+
+            gameState.heat = Math.min(100, gameState.heat + 15);
+            updateHeatDisplay();
+
+            // Visual feedback - make coals glow brighter
+            if (shisha && shisha.userData.coals) {
+                shisha.userData.coals.children.forEach(coal => {
+                    coal.userData.material.emissiveIntensity = 1;
+                });
+            }
+
+            // Create extra embers
+            for (let i = 0; i < 5; i++) {
+                const emberGeometry = new THREE.SphereGeometry(0.03, 8, 8);
+                const emberMaterial = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color().setHSL(0.08, 1, 0.6),
+                    transparent: true,
+                    opacity: 1
+                });
+                const ember = new THREE.Mesh(emberGeometry, emberMaterial);
+                ember.position.set(
+                    (Math.random() - 0.5) * 0.4,
+                    2.2,
+                    (Math.random() - 0.5) * 0.4
+                );
+                ember.userData = {
+                    velocity: new THREE.Vector3(
+                        (Math.random() - 0.5) * 0.05,
+                        0.05 + Math.random() * 0.05,
+                        (Math.random() - 0.5) * 0.05
+                    ),
+                    life: 1,
+                    maxLife: 1
+                };
+                scene.add(ember);
+                coalEmbers.push(ember);
+            }
+
+            showFloatingMessage("🔥 +حرارة!", window.innerWidth * 0.2, window.innerHeight / 2);
+        }
+
+        function updateScoreDisplay() {
+            scoreDisplay.textContent = gameState.score.toLocaleString();
+        }
+
+        function updateComboDisplay() {
+            if (gameState.combo >= 2) {
+                comboBadge.classList.add('active');
+                const comboMessages = ['', '', 'x2 باهي!', 'x3 عظيم!', 'x4 خرافي!', 'x5+ محترف!'];
+                comboText.textContent = comboMessages[Math.min(gameState.combo, 5)];
+            }
+        }
+
+        function updateHeatDisplay() {
+            heatFill.style.height = `${gameState.heat}%`;
+            
+            // Update coal glow based on heat
+            if (shisha && shisha.userData.coals) {
+                const intensity = 0.2 + (gameState.heat / 100) * 0.6;
+                shisha.userData.coals.children.forEach(coal => {
+                    coal.userData.material.emissiveIntensity = intensity;
+                });
+            }
+
+            // Show warning if heat is low
+            if (gameState.heat < 30 && gameState.heat > 0) {
+                showTunisianPhrase('cold');
+                soundManager.playWarning();
+            }
+        }
+
+        function showTunisianPhrase(type) {
+            const phrases = tunisianPhrases[type];
+            const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+            tunisianPhrase.textContent = phrase;
+            tunisianPhrase.style.opacity = '1';
+            setTimeout(() => {
+                tunisianPhrase.style.opacity = '0.6';
+            }, 1000);
+        }
+
+        function showFloatingMessage(text, x, y) {
+            const msg = document.createElement('div');
+            msg.className = 'floating-msg';
+            msg.textContent = text;
+            msg.style.left = `${x}px`;
+            msg.style.top = `${y}px`;
+            document.body.appendChild(msg);
+            
+            setTimeout(() => {
+                msg.remove();
+            }, 1500);
+        }
+
+        async function startGame() {
+            // Initialize sound on first user interaction
+            await soundManager.init();
+            soundManager.playStart();
+            soundManager.startAmbient();
+
+            gameState.score = 0;
+            gameState.combo = 0;
+            gameState.maxCombo = 0;
+            gameState.heat = 80;
+            gameState.rings = 0;
+            gameState.isPlaying = true;
+
+            updateScoreDisplay();
+            updateHeatDisplay();
+            comboBadge.classList.remove('active');
+            ringCounter.textContent = `حلقات: 0 💨`;
+            highScoreDisplay.textContent = `أحسن نتيجة: ${gameState.highScore}`;
+
+            startScreen.classList.add('hidden');
+            gameOverScreen.classList.remove('active');
+
+            // Reset combo on inactivity
+            setInterval(() => {
+                if (gameState.isPlaying && gameState.combo > 0) {
+                    gameState.combo = Math.max(0, gameState.combo - 1);
+                    if (gameState.combo < 2) {
+                        comboBadge.classList.remove('active');
+                    }
+                }
+            }, 2000);
+
+            // Passive heat decay
+            setInterval(() => {
+                if (gameState.isPlaying && gameState.heat > 0) {
+                    gameState.heat = Math.max(0, gameState.heat - 1);
+                    updateHeatDisplay();
+                    if (gameState.heat <= 0) {
+                        endGame();
+                    }
+                }
+            }, 500);
+        }
+
+        function endGame() {
+            gameState.isPlaying = false;
+
+            // Play game over sound and stop ambient
+            soundManager.playGameOver();
+            soundManager.stopAmbient();
+
+            // Update high score
+            if (gameState.score > gameState.highScore) {
+                gameState.highScore = gameState.score;
+                localStorage.setItem('ahmedChayechHighScore', gameState.highScore.toString());
+            }
+
+            finalScore.textContent = gameState.score.toLocaleString();
+            
+            // Set message based on score
+            if (gameState.score > 1000) {
+                scoreMessage.textContent = "محترف شيشة! 👑 أحمد يفتخر بيك!";
+            } else if (gameState.score > 500) {
+                scoreMessage.textContent = "برافو عليك! 🌟 تو تولي أحسن!";
+            } else if (gameState.score > 200) {
+                scoreMessage.textContent = "ماشي الحال! 💪 زيد تمرن!";
+            } else {
+                scoreMessage.textContent = "المرة الجاية خير! 😅";
+            }
+
+            gameOverScreen.classList.add('active');
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Update smoke particles
+            for (let i = smokeParticles.length - 1; i >= 0; i--) {
+                const particle = smokeParticles[i];
+                particle.position.add(particle.userData.velocity);
+                particle.userData.life -= 0.015;
+                particle.userData.scale += 0.02;
+                particle.scale.setScalar(particle.userData.scale);
+                particle.material.opacity = particle.userData.life * 0.6;
+
+                if (particle.userData.life <= 0) {
+                    scene.remove(particle);
+                    smokeParticles.splice(i, 1);
+                }
+            }
+
+            // Update smoke rings
+            for (let i = smokeRings.length - 1; i >= 0; i--) {
+                const ring = smokeRings[i];
+                ring.position.y += ring.userData.velocity;
+                ring.scale.x += 0.02;
+                ring.scale.y += 0.02;
+                ring.userData.life -= 0.01;
+                ring.material.opacity = ring.userData.life * 0.7;
+
+                // Check if ring passes through perfect zone (around y = 3.5 in world space)
+                if (ring.position.y > 3.3 && ring.position.y < 3.7 && !ring.userData.scored) {
+                    ring.userData.scored = true;
+                    gameState.score += 50;
+                    updateScoreDisplay();
+                    showFloatingMessage("⭐ حلقة ذهبية +50!", window.innerWidth / 2, window.innerHeight * 0.3);
+                    showTunisianPhrase('perfect');
+                    soundManager.playPerfect();
+                }
+
+                if (ring.userData.life <= 0) {
+                    scene.remove(ring);
+                    smokeRings.splice(i, 1);
+                }
+            }
+
+            // Update coal embers
+            for (let i = coalEmbers.length - 1; i >= 0; i--) {
+                const ember = coalEmbers[i];
+                ember.position.add(ember.userData.velocity);
+                ember.userData.velocity.y -= 0.001; // gravity
+                ember.userData.life -= 0.02;
+                ember.material.opacity = ember.userData.life;
+
+                if (ember.userData.life <= 0) {
+                    scene.remove(ember);
+                    coalEmbers.splice(i, 1);
+                }
+            }
+
+            // Subtle shisha animation
+            if (shisha) {
+                shisha.rotation.y = Math.sin(Date.now() * 0.0005) * 0.05;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Event Listeners
+        startButton.addEventListener('click', startGame);
+        startButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startGame();
+        });
+
+        restartButton.addEventListener('click', startGame);
+        restartButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startGame();
+        });
+
+        tapButton.addEventListener('click', triggerSmoke);
+        tapButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            triggerSmoke();
+        });
+
+        coalButton.addEventListener('click', addHeat);
+        coalButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            addHeat();
+        });
+
+        // Sound toggle
+        soundToggle.addEventListener('click', () => {
+            const muted = soundManager.toggleMute();
+            soundToggle.textContent = muted ? '🔇' : '🔊';
+            soundToggle.classList.toggle('muted', muted);
+        });
+
+        soundToggle.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const muted = soundManager.toggleMute();
+            soundToggle.textContent = muted ? '🔇' : '🔊';
+            soundToggle.classList.toggle('muted', muted);
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initThreeJS();
+            highScoreDisplay.textContent = `أحسن نتيجة: ${gameState.highScore}`;
+        });
+    </script>
+</body>
+</html>
