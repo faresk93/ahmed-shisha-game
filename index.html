@@ -534,6 +534,72 @@
             color: var(--gold-light);
             margin: 20px 0;
         }
+
+        /* Flavor Selection */
+        .flavor-selection {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .flavor-title {
+            font-family: 'Lalezar', cursive;
+            font-size: 20px;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+
+        .flavor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .flavor-btn {
+            background: linear-gradient(145deg, rgba(40, 30, 40, 0.8), rgba(20, 15, 25, 0.9));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 15px 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flavor-btn:hover {
+            border-color: var(--gold);
+            transform: scale(1.05);
+        }
+
+        .flavor-btn.selected {
+            border-color: var(--gold);
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.2), rgba(114, 47, 55, 0.3));
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .flavor-emoji {
+            font-size: 32px;
+        }
+
+        .flavor-name {
+            font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
+            color: var(--gold-light);
+        }
+
+        .start-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .start-button:disabled:hover {
+            transform: none;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        }
     </style>
 </head>
 <body>
@@ -562,7 +628,31 @@
                 <span>كومبو = نقاط برشا!</span>
             </div>
         </div>
-        <button class="start-button" id="startButton">يلا نبداو! 🔥</button>
+
+        <!-- Flavor Selection -->
+        <div class="flavor-selection">
+            <div class="flavor-title">اختار النكهة 🍎</div>
+            <div class="flavor-grid" id="flavorGrid">
+                <button class="flavor-btn" data-flavor="apple">
+                    <span class="flavor-emoji">🍎</span>
+                    <span class="flavor-name">تفاح</span>
+                </button>
+                <button class="flavor-btn" data-flavor="mint">
+                    <span class="flavor-emoji">🌿</span>
+                    <span class="flavor-name">نعناع</span>
+                </button>
+                <button class="flavor-btn" data-flavor="grape">
+                    <span class="flavor-emoji">🍇</span>
+                    <span class="flavor-name">عنب</span>
+                </button>
+                <button class="flavor-btn" data-flavor="watermelon">
+                    <span class="flavor-emoji">🍉</span>
+                    <span class="flavor-name">دلاع</span>
+                </button>
+            </div>
+        </div>
+
+        <button class="start-button" id="startButton" disabled>اختار نكهة أولاً</button>
     </div>
 
     <!-- Game Over Screen -->
@@ -880,6 +970,42 @@
 
         const soundManager = new SoundManager();
 
+        // Flavor Configurations
+        const flavorConfigs = {
+            apple: {
+                name: 'تفاح',
+                emoji: '🍎',
+                smokeColor: 0xffcccc,  // Light red/pink
+                ringColor: 0xffaaaa,
+                bowlColor: 0xcc3333,   // Red
+                coalGlow: 0xff4500
+            },
+            mint: {
+                name: 'نعناع',
+                emoji: '🌿',
+                smokeColor: 0xccffcc,  // Light green
+                ringColor: 0xaaffaa,
+                bowlColor: 0x228b22,   // Forest green
+                coalGlow: 0x32cd32
+            },
+            grape: {
+                name: 'عنب',
+                emoji: '🍇',
+                smokeColor: 0xe6ccff,  // Light purple
+                ringColor: 0xd9aaff,
+                bowlColor: 0x6b238e,   // Purple
+                coalGlow: 0x9932cc
+            },
+            watermelon: {
+                name: 'دلاع',
+                emoji: '🍉',
+                smokeColor: 0xffcce6,  // Light pink
+                ringColor: 0xffaacc,
+                bowlColor: 0x2e8b57,   // Sea green
+                coalGlow: 0xff6b6b
+            }
+        };
+
         // Game State
         const gameState = {
             score: 0,
@@ -888,7 +1014,8 @@
             heat: 80,
             rings: 0,
             isPlaying: false,
-            highScore: parseInt(localStorage.getItem('ahmedChayechHighScore') || '0')
+            highScore: parseInt(localStorage.getItem('ahmedChayechHighScore') || '0'),
+            selectedFlavor: null
         };
 
         // Tunisian Phrases
@@ -945,6 +1072,8 @@
         const finalScore = document.getElementById('finalScore');
         const scoreMessage = document.getElementById('scoreMessage');
         const soundToggle = document.getElementById('soundToggle');
+        const flavorGrid = document.getElementById('flavorGrid');
+        const flavorButtons = document.querySelectorAll('.flavor-btn');
 
         // Three.js Setup
         let scene, camera, renderer;
@@ -1131,8 +1260,9 @@
 
         function createSmokeParticle(x, y, z) {
             const geometry = new THREE.SphereGeometry(0.1 + Math.random() * 0.1, 8, 8);
+            const flavorConfig = flavorConfigs[gameState.selectedFlavor] || { smokeColor: 0xcccccc };
             const material = new THREE.MeshBasicMaterial({
-                color: 0xcccccc,
+                color: flavorConfig.smokeColor,
                 transparent: true,
                 opacity: 0.6
             });
@@ -1153,8 +1283,9 @@
 
         function createSmokeRing() {
             const ringGeometry = new THREE.TorusGeometry(0.3, 0.08, 8, 32);
+            const flavorConfig = flavorConfigs[gameState.selectedFlavor] || { ringColor: 0xdddddd };
             const ringMaterial = new THREE.MeshBasicMaterial({
-                color: 0xdddddd,
+                color: flavorConfig.ringColor,
                 transparent: true,
                 opacity: 0.7
             });
@@ -1341,6 +1472,9 @@
         }
 
         async function startGame() {
+            // Don't start if no flavor selected
+            if (!gameState.selectedFlavor) return;
+
             // Initialize sound on first user interaction
             await soundManager.init();
             soundManager.playStart();
@@ -1352,6 +1486,9 @@
             gameState.heat = 80;
             gameState.rings = 0;
             gameState.isPlaying = true;
+
+            // Apply selected flavor colors to the shisha
+            applyFlavorToShisha();
 
             updateScoreDisplay();
             updateHeatDisplay();
@@ -1483,6 +1620,57 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
+
+        // Flavor Selection Function
+        function selectFlavor(flavorKey) {
+            gameState.selectedFlavor = flavorKey;
+
+            // Update UI - remove selected from all buttons, add to clicked one
+            flavorButtons.forEach(btn => btn.classList.remove('selected'));
+            const selectedBtn = document.querySelector(`[data-flavor="${flavorKey}"]`);
+            if (selectedBtn) {
+                selectedBtn.classList.add('selected');
+            }
+
+            // Enable start button
+            startButton.disabled = false;
+            const flavorConfig = flavorConfigs[flavorKey];
+            startButton.textContent = `يلا نبداو! ${flavorConfig.emoji}`;
+        }
+
+        // Apply flavor to shisha bowl
+        function applyFlavorToShisha() {
+            if (!shisha || !gameState.selectedFlavor) return;
+            const flavorConfig = flavorConfigs[gameState.selectedFlavor];
+
+            // Find and update the bowl material
+            shisha.traverse((child) => {
+                if (child.isMesh && child.geometry.type === 'CylinderGeometry') {
+                    // Check if this is the bowl (based on position)
+                    if (child.position.y === 3) {
+                        child.material.color.setHex(flavorConfig.bowlColor);
+                    }
+                }
+            });
+
+            // Update coal glow color
+            if (shisha.userData.coals) {
+                shisha.userData.coals.children.forEach(coal => {
+                    coal.userData.material.emissive.setHex(flavorConfig.coalGlow);
+                });
+            }
+        }
+
+        // Event Listeners - Flavor Selection
+        flavorButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                selectFlavor(btn.dataset.flavor);
+            });
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                selectFlavor(btn.dataset.flavor);
+            });
+        });
 
         // Event Listeners
         startButton.addEventListener('click', startGame);
