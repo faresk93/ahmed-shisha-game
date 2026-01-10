@@ -1039,6 +1039,125 @@
                 margin-top: 10px;
             }
         }
+
+        /* Quit Button */
+        .quit-btn {
+            position: fixed;
+            top: clamp(8px, 2vh, 20px);
+            left: clamp(8px, 2vw, 20px);
+            background: linear-gradient(135deg, #ff4b4b, #990000);
+            border: 2px solid var(--gold);
+            border-radius: 30px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            z-index: 30;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.2s ease;
+            max-width: 200px;
+        }
+
+        .quit-btn:active {
+            transform: scale(0.95);
+        }
+
+        .quit-icon {
+            font-size: 1.2rem;
+        }
+
+        .quit-text {
+            font-family: 'Lalezar', cursive;
+            color: white;
+            font-size: clamp(12px, 3.5vw, 16px);
+            white-space: nowrap;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Quit Modal */
+        .quit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .quit-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .quit-content {
+            background: linear-gradient(145deg, rgba(40, 20, 30, 0.95), rgba(20, 10, 20, 0.98));
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .quit-modal.active .quit-content {
+            transform: scale(1);
+        }
+
+        .quit-emoji {
+            font-size: 50px;
+            margin-bottom: 15px;
+            display: block;
+            animation: bounce 2s infinite;
+        }
+
+        .quit-message {
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1.2rem;
+            color: var(--gold-light);
+            margin-bottom: 25px;
+            line-height: 1.6;
+            direction: rtl;
+        }
+
+        .quit-confirm-btn {
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+            border: none;
+            padding: 10px 30px;
+            border-radius: 25px;
+            font-family: 'Lalezar', cursive;
+            font-size: 1.2rem;
+            color: #2d1f3d;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .quit-confirm-btn:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
     </style>
 </head>
 
@@ -1097,6 +1216,15 @@
         <button class="start-button" id="startButton" disabled>اختار نكهة أولاً</button>
     </div>
 
+    <!-- Quit Modal -->
+    <div class="quit-modal" id="quitModal">
+        <div class="quit-content">
+            <span class="quit-emoji">👏</span>
+            <div class="quit-message" id="quitMessage"></div>
+            <button class="quit-confirm-btn" id="quitConfirmBtn">صحيت!</button>
+        </div>
+    </div>
+
     <!-- Game Over Screen -->
     <div class="game-over" id="gameOverScreen">
         <div class="game-over-title">خلص الفحم! 😅</div>
@@ -1130,8 +1258,14 @@
         <!-- Sound Toggle -->
         <div class="sound-toggle" id="soundToggle">🔊</div>
 
+        <!-- Quit Button -->
+        <div class="quit-btn" id="quitBtn">
+            <span class="quit-icon">⛔</span>
+            <span class="quit-text">سكرلي البرنامج سي أحمد</span>
+        </div>
+
         <!-- Restart Game Button -->
-        <div class="restart-game-btn" id="inGameRestartBtn">🔄</div>
+        <div class="restart-game-btn" id="inGameRestartBtn" style="display:none;">🔄</div>
 
         <!-- Heat Meter -->
         <div class="heat-container">
@@ -1537,6 +1671,19 @@
             "ما يغركش الجو.. الشيشة تضر القلب والراري.. رد بالك! 🚑",
             "يا بطل، كل نفس شيشة ينقص مـالعمر.. صحتك أمانة! ⏳",
             "الشيشة إدمان خايب.. خليك قوي وسيطر على روحك! 🛡️"
+
+        ];
+
+        // Quit Messages (Tunisian Dialect)
+        const quitMessages = [
+            "يعطيك الصحة يا بطل! 👏 ارتحت من السموم وصحتك تو تشكرك!",
+            "قرار عالمي! 💪 صحتك أهم من أي شيشة.. كمل هكا!",
+            "برافو عليك! 🎉 سكرت البرنامج وارتحت.. رئتيك فرحانين بيك!",
+            "هكة نحبوك! 😍 قوي العزيمة.. الشيشة ما عندها وين توصل!",
+            "أحسنت الاختيار! 👍 الصحة تاج على رؤوس الأصحاء.. استحفظ عليها!",
+            "سكرلي البرنامج وارتاح! 😎 الشيشة وفات، وصحتك بدات!",
+            "يا معلم! 🌟 خليك بعيد على الدخان وعيش حياتك نظيفة!",
+            "إنجاز عظيم! 🏆 كل مرة تبطل فيها راك تربح في عمرك!"
         ];
 
         // Three.js Setup
@@ -2190,6 +2337,45 @@
                 startButton.disabled = false;
             }
         }
+
+        // Initialize Quit Functinonality
+        const quitBtn = document.getElementById('quitBtn');
+        const quitModal = document.getElementById('quitModal');
+        const quitConfirmBtn = document.getElementById('quitConfirmBtn');
+        const quitMessageEl = document.getElementById('quitMessage');
+
+        function triggerQuit() {
+            if (!gameState.isPlaying) return;
+
+            // Stop Game
+            gameState.isPlaying = false;
+            soundManager.stopAmbient();
+
+            // Pick Random Congratulation Message
+            const msg = quitMessages[Math.floor(Math.random() * quitMessages.length)];
+            quitMessageEl.textContent = msg;
+
+            // Show Modal
+            quitModal.classList.add('active');
+            soundManager.playClick();
+        }
+
+        function closeQuitModal() {
+            quitModal.classList.remove('active');
+            goToHome();
+        }
+
+        quitBtn.addEventListener('click', triggerQuit);
+        quitBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            triggerQuit();
+        });
+
+        quitConfirmBtn.addEventListener('click', closeQuitModal);
+        quitConfirmBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            closeQuitModal();
+        });
 
         // Restart Game Button (Returns to Home)
         inGameRestartBtn.addEventListener('click', goToHome);
