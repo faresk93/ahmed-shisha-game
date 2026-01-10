@@ -457,9 +457,29 @@
             font-size: clamp(12px, 3.5vw, 24px);
             color: var(--gold-light);
             opacity: 0.9;
-            margin-bottom: clamp(10px, 2vh, 40px);
+            margin-bottom: clamp(10px, 2vh, 15px);
             position: relative;
             z-index: 1;
+        }
+
+        .warning-message {
+            font-family: 'Tajawal', sans-serif;
+            font-size: clamp(14px, 4vw, 18px);
+            color: #ff8e8e;
+            background: rgba(74, 31, 36, 0.6);
+            padding: 8px 16px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            margin-bottom: clamp(10px, 2vh, 25px);
+            max-width: 90%;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+            direction: rtl;
         }
 
         .shisha-emoji {
@@ -1027,6 +1047,7 @@
     <div class="start-screen" id="startScreen">
         <div class="game-title">أحمد الشياش</div>
         <div class="game-subtitle">Ahmed Chayech - لعبة الشيشة التونسية 💨</div>
+        <div id="greetingMessage" class="warning-message"></div>
         <div class="shisha-emoji">
             <img src="https://imgproxy.attic.sh/insecure/f:png/plain/https://attic.sh/654dtcxvzmon7gyi7a86orpqxxr5"
                 width="100px" />
@@ -1501,7 +1522,22 @@
         const soundToggle = document.getElementById('soundToggle');
         const inGameRestartBtn = document.getElementById('inGameRestartBtn');
         const flavorGrid = document.getElementById('flavorGrid');
+
         const flavorButtons = document.querySelectorAll('.flavor-btn');
+        const greetingElement = document.getElementById('greetingMessage');
+
+        // Shisha Warning Messages (Tunisian Dialect)
+        const warningMessages = [
+            "يا أحمد، رد بالك! الشيشة وحدة تعادل 100 سيڨارو.. صحتك أبجل! 🚭",
+            "صحتك يا غالي أهم مـالدخان.. رد بالك على رئتيك! 🫁",
+            "الشيشة فيها برشا سموم وأول أكسيد الكربون.. ما تكثرش منها! ⚠️",
+            "الماء في الشيشة ما ينحيش السموم.. رد بالك تغلط! 🚫",
+            "يا أحمد، الشيشة مضرة بالصحة وتسبب برشا أمراض.. حافظ على روحك! ❤️",
+            "جلسة الشيشة تفوت، أما صحتك هي الي تدوم.. استحفظ عليها! 💪",
+            "ما يغركش الجو.. الشيشة تضر القلب والراري.. رد بالك! 🚑",
+            "يا بطل، كل نفس شيشة ينقص مـالعمر.. صحتك أمانة! ⏳",
+            "الشيشة إدمان خايب.. خليك قوي وسيطر على روحك! 🛡️"
+        ];
 
         // Three.js Setup
         let scene, camera, renderer;
@@ -2166,6 +2202,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             initThreeJS();
             highScoreDisplay.textContent = `أحسن نتيجة: ${gameState.highScore}`;
+
+            // Set random greeting message
+            const randomMsg = warningMessages[Math.floor(Math.random() * warningMessages.length)];
+            if (greetingElement) {
+                greetingElement.textContent = randomMsg;
+            }
         });
     </script>
 </body>
