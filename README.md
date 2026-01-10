@@ -7,6 +7,8 @@
   <img src="https://img.shields.io/badge/Audio-Tone.js-purple?style=for-the-badge" alt="Tone.js">
   <img src="https://img.shields.io/badge/Language-Tunisian%20Derja-red?style=for-the-badge" alt="Tunisian">
   <img src="https://img.shields.io/badge/Platform-Mobile%20Friendly-green?style=for-the-badge" alt="Mobile">
+  <br>
+  <img src="https://github.com/faresk93/ahmed-shisha-game/actions/workflows/deploy.yml/badge.svg" alt="Deploy to GitHub Pages">
 </p>
 
 ---
@@ -25,11 +27,22 @@ Whether you're missing the vibes of a Tunisian *kahwa* or just want a chill gami
 
 ## ✨ Features
 
+### 🍎 Shisha Flavor Selection
+Choose your favorite flavor at the start of the game! Each flavor features unique visual effects:
+
+| Flavor | Emoji | Smoke Color | Bowl Color |
+|--------|-------|-------------|------------|
+| تفاح (Apple) | 🍎 | Light Pink | Red |
+| نعناع (Mint) | 🌿 | Light Green | Forest Green |
+| عنب (Grape) | 🍇 | Light Purple | Purple |
+| دلاع (Watermelon) | 🍉 | Light Pink | Sea Green |
+
 ### 🎨 Stunning 3D Graphics
 - Beautifully crafted 3D shisha model with metallic gold accents
 - Realistic glowing coal with dynamic ember particles
-- Floating smoke particles and expanding smoke rings
+- Floating smoke particles and expanding smoke rings with flavor-specific colors
 - Atmospheric lighting with warm Middle Eastern tones
+- Animated backgrounds with pulsing gradients
 
 ### 🔊 Immersive Sound Design
 | Sound | Description |
@@ -70,11 +83,12 @@ The game features genuine Tunisian Derja (dialect) phrases:
 
 ### Gameplay Loop
 
-1. **Start the game** - Tap "يلا نبداو!" (Let's go!)
-2. **Smoke** - Tap the smoke button to puff and earn points
-3. **Manage heat** - Keep the coals hot or game over!
-4. **Build combos** - Chain puffs for multiplier bonuses
-5. **Hit the golden zone** - Guide smoke rings through the target for +50 bonus points
+1. **Choose your flavor** - Select from 4 authentic shisha flavors
+2. **Start the game** - Tap "يلا نبداو!" (Let's go!)
+3. **Smoke** - Tap the smoke button to puff and earn points
+4. **Manage heat** - Keep the coals hot or game over!
+5. **Build combos** - Chain puffs for multiplier bonuses
+6. **Hit the golden zone** - Guide smoke rings through the target for +50 bonus points
 
 ### Scoring System
 
@@ -110,13 +124,16 @@ The game features genuine Tunisian Derja (dialect) phrases:
 
 ## 📱 Mobile Optimization
 
-Ahmed Chayech is fully optimized for mobile devices:
+Ahmed Chayech is fully optimized for mobile devices with a no-scroll, full-screen experience:
 
-- Touch-friendly large tap targets
-- Responsive layout adapts to any screen size
+- Touch-friendly large tap targets with responsive sizing
+- Responsive layout that fits everything on screen without scrolling
+- Dynamic viewport height (`100dvh`) for consistent mobile experience
 - Optimized particle count for smooth performance
 - Disabled zoom and scroll for immersive gameplay
 - High DPI display support
+- Special landscape mode layout adjustments
+- CSS clamp() for fluid, adaptive typography and spacing
 
 ---
 
@@ -136,18 +153,27 @@ Typography uses **Lalezar** for Arabic display text and **Tajawal** for body con
 ## 🚀 Getting Started
 
 ### Quick Start
-Simply open `ahmed-chayech.html` in any modern web browser!
+Simply open `index.html` in any modern web browser!
 
 ### Local Development
 ```bash
-# Clone or download the file
+# Clone the repository
+git clone https://github.com/faresk93/ahmed-shisha-game.git
+cd ahmed-shisha-game
+
 # Open in browser
-open ahmed-chayech.html
+open index.html
 
 # Or serve locally
 python -m http.server 8000
-# Then visit http://localhost:8000/ahmed-chayech.html
+# Then visit http://localhost:8000
 ```
+
+### 🔄 Deployment
+
+This project uses **GitHub Actions** for automatic deployment. Every merge to the main branch triggers automatic deployment to GitHub Pages.
+
+The live game is available at: https://faresk93.github.io/ahmed-shisha-game/
 
 ---
 
@@ -186,12 +212,13 @@ python -m http.server 8000
 
 Feel free to fork, modify, and improve! Ideas for future features:
 
-- [ ] Multiple shisha flavors with unique effects
+- [x] ~~Multiple shisha flavors with unique effects~~ ✅ Implemented!
 - [ ] Achievements system
 - [ ] Multiplayer smoke ring battles
 - [ ] More Tunisian phrases and regional dialects
 - [ ] Customizable shisha designs
 - [ ] Leaderboard system
+- [ ] Additional shisha flavors
 
 ---
 
@@ -210,6 +237,8 @@ This project is open source and available for personal and educational use.
 ---
 
 <p align="center">
+  <strong>Made with shisha ❤️ love by Fares AI to Ahmed Chayech</strong>
+  <br><br>
   <strong>🇹🇳 Made with ❤️ for Tunisia 🇹🇳</strong>
   <br>
   <em>يعيشك! - Ya3ichek!</em>
