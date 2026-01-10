@@ -2139,11 +2139,27 @@
             soundToggle.classList.toggle('muted', muted);
         });
 
-        // Restart Game Button
-        inGameRestartBtn.addEventListener('click', startGame);
+        // Go back to Home Screen
+        function goToHome() {
+            gameState.isPlaying = false;
+            soundManager.stopAmbient();
+            startScreen.classList.remove('hidden');
+            gameOverScreen.classList.remove('active');
+
+            // Reset UI slightly so it looks clean behind the start screen
+            comboBadge.classList.remove('active');
+
+            // Re-enable start button if flavor is selected
+            if (gameState.selectedFlavor) {
+                startButton.disabled = false;
+            }
+        }
+
+        // Restart Game Button (Returns to Home)
+        inGameRestartBtn.addEventListener('click', goToHome);
         inGameRestartBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            startGame();
+            goToHome();
         });
 
         // Initialize
