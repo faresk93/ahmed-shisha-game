@@ -21,25 +21,56 @@
             --smoke: rgba(200, 200, 200, 0.6);
             --ember: #FF6B35;
             --ember-glow: #FFD93D;
+            --vh: 1vh;
+        }
+
+        html, body {
+            height: 100%;
+            height: 100dvh;
         }
 
         body {
             font-family: 'Tajawal', sans-serif;
             background: linear-gradient(135deg, #1a0a0f 0%, #2d1f3d 50%, #1a0a0f 100%);
-            min-height: 100vh;
+            height: 100dvh;
+            max-height: 100dvh;
             overflow: hidden;
             position: fixed;
             width: 100%;
             touch-action: manipulation;
         }
 
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(255, 107, 53, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(114, 47, 55, 0.1) 0%, transparent 60%);
+            animation: bgPulse 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
         #game-container {
             position: relative;
             width: 100%;
-            height: 100vh;
+            height: 100dvh;
+            max-height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
+            overflow: hidden;
         }
 
         #canvas-container {
@@ -62,9 +93,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(114, 47, 55, 0.05) 0%, transparent 50%);
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(114, 47, 55, 0.08) 0%, transparent 50%);
             pointer-events: none;
             z-index: 2;
         }
@@ -74,7 +105,7 @@
             position: relative;
             z-index: 10;
             width: 100%;
-            padding: 20px;
+            padding: clamp(8px, 2vh, 20px) clamp(10px, 3vw, 20px);
             pointer-events: none;
         }
 
@@ -86,27 +117,36 @@
         }
 
         .score-container {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(114, 47, 55, 0.3));
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(114, 47, 55, 0.35));
             border: 2px solid var(--gold);
-            border-radius: 20px;
-            padding: 12px 24px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.2);
+            border-radius: clamp(12px, 3vw, 20px);
+            padding: clamp(6px, 1.5vh, 12px) clamp(12px, 3vw, 24px);
+            backdrop-filter: blur(15px);
+            box-shadow:
+                0 8px 32px rgba(212, 175, 55, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: scoreGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes scoreGlow {
+            0%, 100% { box-shadow: 0 8px 32px rgba(212, 175, 55, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1); }
+            50% { box-shadow: 0 8px 40px rgba(212, 175, 55, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2); }
         }
 
         .score-label {
             font-family: 'Lalezar', cursive;
-            font-size: 12px;
+            font-size: clamp(9px, 2vw, 12px);
             color: var(--gold-light);
-            opacity: 0.8;
+            opacity: 0.9;
             letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .score-value {
             font-family: 'Lalezar', cursive;
-            font-size: 36px;
+            font-size: clamp(24px, 6vw, 36px);
             color: var(--gold);
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            text-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
             line-height: 1;
         }
 
@@ -117,54 +157,66 @@
         .combo-badge {
             background: linear-gradient(135deg, var(--ember), var(--ember-glow));
             border-radius: 30px;
-            padding: 8px 20px;
+            padding: clamp(4px, 1vh, 8px) clamp(10px, 3vw, 20px);
             opacity: 0;
             transform: scale(0.5);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
         }
 
         .combo-badge.active {
             opacity: 1;
             transform: scale(1);
+            animation: comboPulse 0.5s ease-out;
+        }
+
+        @keyframes comboPulse {
+            0% { transform: scale(0.5); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
         }
 
         .combo-text {
             font-family: 'Lalezar', cursive;
-            font-size: 18px;
+            font-size: clamp(12px, 3vw, 18px);
             color: white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
         }
 
         /* Coal Heat Meter */
         .heat-container {
             position: fixed;
-            right: 20px;
+            right: clamp(8px, 2vw, 20px);
             top: 50%;
             transform: translateY(-50%);
             z-index: 10;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: clamp(4px, 1vh, 8px);
         }
 
         .heat-label {
             font-family: 'Lalezar', cursive;
-            font-size: 14px;
+            font-size: clamp(10px, 2.5vw, 14px);
             color: var(--gold-light);
             writing-mode: vertical-rl;
             text-orientation: mixed;
             transform: rotate(180deg);
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
         }
 
         .heat-meter {
-            width: 24px;
-            height: 200px;
-            background: rgba(0,0,0,0.4);
+            width: clamp(16px, 4vw, 24px);
+            height: clamp(100px, 20vh, 200px);
+            background: rgba(0,0,0,0.5);
             border: 2px solid var(--gold);
             border-radius: 12px;
             overflow: hidden;
             position: relative;
+            box-shadow:
+                inset 0 2px 10px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(212, 175, 55, 0.2);
         }
 
         .heat-fill {
@@ -176,6 +228,7 @@
             background: linear-gradient(to top, var(--ember), var(--ember-glow), #FFE4B5);
             border-radius: 10px;
             transition: height 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
         }
 
         .heat-fill::after {
@@ -184,8 +237,8 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 20px;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent);
+            height: 30%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.7), transparent);
             animation: heatGlow 0.5s ease-in-out infinite alternate;
         }
 
@@ -197,7 +250,7 @@
         /* Tap Zone */
         .tap-zone {
             position: fixed;
-            bottom: 30px;
+            bottom: clamp(10px, 2vh, 30px);
             left: 50%;
             transform: translateX(-50%);
             z-index: 20;
@@ -205,15 +258,16 @@
         }
 
         .tap-button {
-            width: 120px;
-            height: 120px;
+            width: clamp(80px, 18vw, 120px);
+            height: clamp(80px, 18vw, 120px);
             border-radius: 50%;
             background: linear-gradient(145deg, var(--burgundy), var(--burgundy-dark));
-            border: 4px solid var(--gold);
-            box-shadow: 
-                0 0 30px rgba(212, 175, 55, 0.3),
-                inset 0 -5px 15px rgba(0,0,0,0.4),
-                inset 0 5px 15px rgba(255,255,255,0.1);
+            border: clamp(3px, 0.8vw, 4px) solid var(--gold);
+            box-shadow:
+                0 0 40px rgba(212, 175, 55, 0.4),
+                0 0 80px rgba(255, 107, 53, 0.2),
+                inset 0 -5px 20px rgba(0,0,0,0.5),
+                inset 0 5px 20px rgba(255,255,255,0.15);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -222,34 +276,46 @@
             transition: all 0.15s ease;
             -webkit-user-select: none;
             user-select: none;
+            animation: tapButtonPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes tapButtonPulse {
+            0%, 100% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.4), 0 0 80px rgba(255, 107, 53, 0.2), inset 0 -5px 20px rgba(0,0,0,0.5), inset 0 5px 20px rgba(255,255,255,0.15); }
+            50% { box-shadow: 0 0 50px rgba(212, 175, 55, 0.6), 0 0 100px rgba(255, 107, 53, 0.3), inset 0 -5px 20px rgba(0,0,0,0.5), inset 0 5px 20px rgba(255,255,255,0.15); }
         }
 
         .tap-button:active {
-            transform: scale(0.92);
-            box-shadow: 
-                0 0 50px rgba(255, 107, 53, 0.5),
+            transform: scale(0.9);
+            box-shadow:
+                0 0 60px rgba(255, 107, 53, 0.7),
+                0 0 100px rgba(255, 217, 61, 0.4),
                 inset 0 -2px 10px rgba(0,0,0,0.4),
                 inset 0 2px 10px rgba(255,255,255,0.1);
+            animation: none;
         }
 
         .tap-icon {
-            font-size: 40px;
-            margin-bottom: 4px;
+            font-size: clamp(28px, 7vw, 40px);
+            margin-bottom: 2px;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
         }
 
         .tap-text {
             font-family: 'Lalezar', cursive;
-            font-size: 14px;
+            font-size: clamp(10px, 2.5vw, 14px);
             color: var(--gold-light);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
 
         /* Floating Messages */
         .floating-msg {
             position: fixed;
             font-family: 'Lalezar', cursive;
-            font-size: 24px;
+            font-size: clamp(18px, 5vw, 24px);
             color: var(--gold);
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+            text-shadow:
+                0 0 20px rgba(212, 175, 55, 0.8),
+                0 0 40px rgba(212, 175, 55, 0.4);
             pointer-events: none;
             z-index: 100;
             animation: floatUp 1.5s ease-out forwards;
@@ -262,7 +328,7 @@
             }
             100% {
                 opacity: 0;
-                transform: translateY(-100px) scale(1.3);
+                transform: translateY(-80px) scale(1.4);
             }
         }
 
@@ -272,16 +338,38 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            height: 100dvh;
+            max-height: 100dvh;
             background: linear-gradient(135deg, #1a0a0f 0%, #2d1f3d 50%, #1a0a0f 100%);
             z-index: 1000;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: safe center;
             text-align: center;
-            padding: 20px;
+            padding: clamp(10px, 2vh, 20px);
             transition: opacity 0.5s ease, visibility 0.5s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .start-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 30% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
+            animation: startBgPulse 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes startBgPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         .start-screen.hidden {
@@ -291,114 +379,143 @@
 
         .game-title {
             font-family: 'Lalezar', cursive;
-            font-size: clamp(40px, 12vw, 72px);
+            font-size: clamp(32px, 10vw, 72px);
             color: var(--gold);
-            text-shadow: 
-                0 0 30px rgba(212, 175, 55, 0.5),
+            text-shadow:
+                0 0 30px rgba(212, 175, 55, 0.6),
+                0 0 60px rgba(212, 175, 55, 0.3),
                 0 4px 0 var(--burgundy);
-            margin-bottom: 10px;
+            margin-bottom: clamp(4px, 1vh, 10px);
             animation: titlePulse 2s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
         }
 
         @keyframes titlePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
+            0%, 100% { transform: scale(1); text-shadow: 0 0 30px rgba(212, 175, 55, 0.6), 0 0 60px rgba(212, 175, 55, 0.3), 0 4px 0 var(--burgundy); }
+            50% { transform: scale(1.02); text-shadow: 0 0 40px rgba(212, 175, 55, 0.8), 0 0 80px rgba(212, 175, 55, 0.4), 0 4px 0 var(--burgundy); }
         }
 
         .game-subtitle {
             font-family: 'Tajawal', sans-serif;
-            font-size: clamp(16px, 4vw, 24px);
+            font-size: clamp(12px, 3.5vw, 24px);
             color: var(--gold-light);
-            opacity: 0.8;
-            margin-bottom: 40px;
+            opacity: 0.9;
+            margin-bottom: clamp(10px, 2vh, 40px);
+            position: relative;
+            z-index: 1;
         }
 
         .shisha-emoji {
-            font-size: 50px;
+            font-size: clamp(40px, 10vw, 50px);
             animation: shishaFloat 3s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
+        }
+
+        .shisha-emoji img {
+            width: clamp(60px, 15vw, 100px);
         }
 
         @keyframes shishaFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
         }
 
         .instructions {
-            background: rgba(212, 175, 55, 0.1);
-            border: 1px solid var(--gold);
-            border-radius: 20px;
-            padding: 20px 30px;
-            margin: 20px 0;
-            max-width: 350px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.12), rgba(114, 47, 55, 0.15));
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            border-radius: clamp(12px, 3vw, 20px);
+            padding: clamp(10px, 2vh, 20px) clamp(15px, 4vw, 30px);
+            margin: clamp(8px, 1.5vh, 20px) 0;
+            max-width: min(350px, 90vw);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
         }
 
         .instruction-item {
             color: var(--gold-light);
-            font-size: 16px;
-            margin: 12px 0;
+            font-size: clamp(11px, 3vw, 16px);
+            margin: clamp(6px, 1vh, 12px) 0;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: clamp(6px, 2vw, 10px);
         }
 
         .instruction-icon {
-            font-size: 24px;
+            font-size: clamp(18px, 5vw, 24px);
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
         }
 
         .start-button {
             font-family: 'Lalezar', cursive;
-            font-size: 28px;
+            font-size: clamp(18px, 5vw, 28px);
             color: white;
             background: linear-gradient(145deg, var(--burgundy), var(--burgundy-dark));
             border: 3px solid var(--gold);
             border-radius: 50px;
-            padding: 15px 60px;
+            padding: clamp(10px, 2vh, 15px) clamp(30px, 8vw, 60px);
             cursor: pointer;
-            margin-top: 30px;
+            margin-top: clamp(12px, 2vh, 30px);
             transition: all 0.3s ease;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            box-shadow:
+                0 8px 30px rgba(0,0,0,0.4),
+                0 0 30px rgba(212, 175, 55, 0.2);
+            position: relative;
+            z-index: 1;
         }
 
         .start-button:hover, .start-button:active {
             transform: scale(1.05);
-            box-shadow: 0 0 40px rgba(212, 175, 55, 0.5);
+            box-shadow:
+                0 0 50px rgba(212, 175, 55, 0.6),
+                0 0 80px rgba(255, 107, 53, 0.3);
         }
 
         /* Tunisian Phrases */
         .tunisian-phrase {
             position: fixed;
-            left: 20px;
-            bottom: 150px;
+            left: clamp(8px, 2vw, 20px);
+            bottom: clamp(100px, 18vh, 150px);
             font-family: 'Lalezar', cursive;
-            font-size: 18px;
+            font-size: clamp(12px, 3.5vw, 18px);
             color: var(--gold-light);
-            opacity: 0.6;
-            max-width: 150px;
+            opacity: 0.7;
+            max-width: clamp(80px, 20vw, 150px);
             text-align: center;
             z-index: 10;
             transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
         }
 
         /* High Score */
         .high-score {
             position: fixed;
-            top: 20px;
+            top: clamp(8px, 2vh, 20px);
             left: 50%;
             transform: translateX(-50%);
             font-family: 'Lalezar', cursive;
-            font-size: 14px;
+            font-size: clamp(10px, 2.5vw, 14px);
             color: var(--gold-light);
-            opacity: 0.7;
+            opacity: 0.8;
             z-index: 10;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
         }
 
         /* Sound Toggle Button */
         .sound-toggle {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
+            top: clamp(8px, 2vh, 20px);
+            right: clamp(8px, 2vw, 20px);
+            width: clamp(36px, 10vw, 50px);
+            height: clamp(36px, 10vw, 50px);
             border-radius: 50%;
             background: rgba(212, 175, 55, 0.2);
             border: 2px solid var(--gold);
@@ -407,13 +524,15 @@
             justify-content: center;
             cursor: pointer;
             z-index: 30;
-            font-size: 24px;
+            font-size: clamp(18px, 5vw, 24px);
             transition: all 0.2s ease;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .sound-toggle:active {
             transform: scale(0.9);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
         }
 
         .sound-toggle.muted {
@@ -423,67 +542,91 @@
         /* Coal Tap Button */
         .coal-button {
             position: fixed;
-            left: 20px;
+            left: clamp(8px, 2vw, 20px);
             top: 50%;
             transform: translateY(-50%);
-            width: 70px;
-            height: 70px;
+            width: clamp(50px, 12vw, 70px);
+            height: clamp(50px, 12vw, 70px);
             border-radius: 50%;
-            background: linear-gradient(145deg, #333, #1a1a1a);
+            background: linear-gradient(145deg, #444, #222);
             border: 3px solid var(--ember);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             z-index: 20;
-            box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+            box-shadow:
+                0 0 25px rgba(255, 107, 53, 0.4),
+                0 0 50px rgba(255, 107, 53, 0.2),
+                inset 0 2px 10px rgba(255, 255, 255, 0.1);
             transition: all 0.2s ease;
+            animation: coalPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes coalPulse {
+            0%, 100% { box-shadow: 0 0 25px rgba(255, 107, 53, 0.4), 0 0 50px rgba(255, 107, 53, 0.2), inset 0 2px 10px rgba(255, 255, 255, 0.1); }
+            50% { box-shadow: 0 0 35px rgba(255, 107, 53, 0.6), 0 0 70px rgba(255, 107, 53, 0.3), inset 0 2px 10px rgba(255, 255, 255, 0.1); }
         }
 
         .coal-button:active {
             transform: translateY(-50%) scale(0.9);
-            box-shadow: 0 0 40px rgba(255, 107, 53, 0.6);
+            box-shadow:
+                0 0 50px rgba(255, 107, 53, 0.8),
+                0 0 100px rgba(255, 217, 61, 0.4);
+            animation: none;
         }
 
         .coal-icon {
-            font-size: 32px;
+            font-size: clamp(24px, 6vw, 32px);
+            filter: drop-shadow(0 0 5px rgba(255, 107, 53, 0.5));
         }
 
         /* Smoke Ring Counter */
         .ring-counter {
             position: fixed;
-            bottom: 170px;
+            bottom: clamp(95px, 16vh, 170px);
             left: 50%;
             transform: translateX(-50%);
             font-family: 'Lalezar', cursive;
-            font-size: 16px;
+            font-size: clamp(12px, 3vw, 16px);
             color: var(--smoke);
             z-index: 10;
+            text-shadow: 0 0 10px rgba(200, 200, 200, 0.3);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 12px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
         }
 
         /* Perfect indicator */
         .perfect-zone {
             position: fixed;
-            top: 30%;
+            top: clamp(20%, 25vh, 30%);
             left: 50%;
             transform: translateX(-50%);
-            width: 120px;
-            height: 120px;
-            border: 3px dashed rgba(212, 175, 55, 0.3);
+            width: clamp(80px, 18vw, 120px);
+            height: clamp(80px, 18vw, 120px);
+            border: 3px dashed rgba(212, 175, 55, 0.4);
             border-radius: 50%;
             z-index: 5;
             pointer-events: none;
+            animation: perfectZonePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes perfectZonePulse {
+            0%, 100% { border-color: rgba(212, 175, 55, 0.3); box-shadow: none; }
+            50% { border-color: rgba(212, 175, 55, 0.6); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
         }
 
         .perfect-label {
             position: absolute;
-            top: -25px;
+            top: -22px;
             left: 50%;
             transform: translateX(-50%);
             font-family: 'Lalezar', cursive;
-            font-size: 12px;
+            font-size: clamp(9px, 2.5vw, 12px);
             color: var(--gold);
-            opacity: 0.5;
+            opacity: 0.6;
             white-space: nowrap;
         }
 
@@ -493,15 +636,33 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background: rgba(26, 10, 15, 0.95);
+            height: 100dvh;
+            background: rgba(26, 10, 15, 0.97);
             z-index: 1000;
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 20px;
+            padding: clamp(15px, 3vh, 20px);
+            overflow: hidden;
+        }
+
+        .game-over::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
+            animation: gameOverBg 4s ease-in-out infinite;
+        }
+
+        @keyframes gameOverBg {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
         }
 
         .game-over.active {
@@ -516,77 +677,105 @@
 
         .game-over-title {
             font-family: 'Lalezar', cursive;
-            font-size: 36px;
+            font-size: clamp(24px, 8vw, 36px);
             color: var(--gold);
-            margin-bottom: 20px;
+            margin-bottom: clamp(10px, 2vh, 20px);
+            position: relative;
+            z-index: 1;
         }
 
         .final-score {
             font-family: 'Lalezar', cursive;
-            font-size: 64px;
+            font-size: clamp(48px, 15vw, 64px);
             color: var(--ember-glow);
-            text-shadow: 0 0 30px rgba(255, 217, 61, 0.5);
+            text-shadow:
+                0 0 30px rgba(255, 217, 61, 0.6),
+                0 0 60px rgba(255, 217, 61, 0.3);
+            position: relative;
+            z-index: 1;
+            animation: scoreReveal 1s ease-out;
+        }
+
+        @keyframes scoreReveal {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .score-message {
             font-family: 'Tajawal', sans-serif;
-            font-size: 20px;
+            font-size: clamp(14px, 4vw, 20px);
             color: var(--gold-light);
-            margin: 20px 0;
+            margin: clamp(10px, 2vh, 20px) 0;
+            position: relative;
+            z-index: 1;
         }
 
         /* Flavor Selection */
         .flavor-selection {
-            margin: 20px 0;
+            margin: clamp(10px, 1.5vh, 20px) 0;
             text-align: center;
+            position: relative;
+            z-index: 1;
         }
 
         .flavor-title {
             font-family: 'Lalezar', cursive;
-            font-size: 20px;
+            font-size: clamp(14px, 4vw, 20px);
             color: var(--gold);
-            margin-bottom: 15px;
+            margin-bottom: clamp(8px, 1.5vh, 15px);
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
         }
 
         .flavor-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            max-width: 320px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: clamp(6px, 2vw, 12px);
+            max-width: min(400px, 95vw);
             margin: 0 auto;
         }
 
         .flavor-btn {
-            background: linear-gradient(145deg, rgba(40, 30, 40, 0.8), rgba(20, 15, 25, 0.9));
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            border-radius: 15px;
-            padding: 15px 10px;
+            background: linear-gradient(145deg, rgba(50, 40, 50, 0.9), rgba(30, 25, 35, 0.95));
+            border: 2px solid rgba(212, 175, 55, 0.35);
+            border-radius: clamp(10px, 3vw, 15px);
+            padding: clamp(8px, 1.5vh, 15px) clamp(6px, 2vw, 10px);
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: clamp(4px, 1vh, 8px);
+            backdrop-filter: blur(5px);
         }
 
         .flavor-btn:hover {
             border-color: var(--gold);
-            transform: scale(1.05);
+            transform: scale(1.08);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
         }
 
         .flavor-btn.selected {
             border-color: var(--gold);
-            background: linear-gradient(145deg, rgba(212, 175, 55, 0.2), rgba(114, 47, 55, 0.3));
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.25), rgba(114, 47, 55, 0.35));
+            box-shadow:
+                0 0 25px rgba(212, 175, 55, 0.4),
+                inset 0 0 20px rgba(212, 175, 55, 0.1);
+            animation: selectedPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes selectedPulse {
+            0%, 100% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.4), inset 0 0 20px rgba(212, 175, 55, 0.1); }
+            50% { box-shadow: 0 0 35px rgba(212, 175, 55, 0.6), inset 0 0 25px rgba(212, 175, 55, 0.15); }
         }
 
         .flavor-emoji {
-            font-size: 32px;
+            font-size: clamp(22px, 6vw, 32px);
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
         }
 
         .flavor-name {
             font-family: 'Tajawal', sans-serif;
-            font-size: 14px;
+            font-size: clamp(10px, 2.5vw, 14px);
             color: var(--gold-light);
         }
 
@@ -599,6 +788,85 @@
         .start-button:disabled:hover {
             transform: none;
             box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        }
+
+        /* Signature Footer */
+        .signature {
+            position: fixed;
+            bottom: clamp(4px, 1vh, 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Tajawal', sans-serif;
+            font-size: clamp(8px, 2vw, 11px);
+            color: rgba(212, 175, 55, 0.6);
+            text-align: center;
+            z-index: 999;
+            white-space: nowrap;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.5px;
+        }
+
+        .signature .heart {
+            color: #ff6b6b;
+            animation: heartBeat 1.5s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Media query for very small screens */
+        @media (max-height: 600px) {
+            .instructions {
+                padding: 8px 12px;
+            }
+            .instruction-item {
+                margin: 4px 0;
+            }
+            .flavor-grid {
+                gap: 4px;
+            }
+            .flavor-btn {
+                padding: 6px 4px;
+            }
+            .shisha-emoji img {
+                width: 50px;
+            }
+        }
+
+        /* Landscape mode adjustments */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .start-screen {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+            }
+            .game-title {
+                width: 100%;
+                margin-bottom: 0;
+            }
+            .game-subtitle {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            .shisha-emoji {
+                display: none;
+            }
+            .instructions {
+                flex: 1;
+                margin: 5px;
+            }
+            .flavor-selection {
+                flex: 1;
+                margin: 5px;
+            }
+            .start-button {
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
@@ -720,6 +988,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Signature Footer -->
+    <div class="signature">made with shisha <span class="heart">❤</span> love by Fares AI to Ahmed Chayech</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
