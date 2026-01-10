@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>أحمد الشياش - Ahmed Chayech 💨</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Tajawal:wght@400;700;800&display=swap"
+        rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -24,7 +26,8 @@
             --vh: 1vh;
         }
 
-        html, body {
+        html,
+        body {
             height: 100%;
             height: 100dvh;
         }
@@ -58,8 +61,17 @@
         }
 
         @keyframes bgPulse {
-            0%, 100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.05); }
+
+            0%,
+            100% {
+                opacity: 0.6;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
         }
 
         #game-container {
@@ -129,8 +141,15 @@
         }
 
         @keyframes scoreGlow {
-            0%, 100% { box-shadow: 0 8px 32px rgba(212, 175, 55, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1); }
-            50% { box-shadow: 0 8px 40px rgba(212, 175, 55, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2); }
+
+            0%,
+            100% {
+                box-shadow: 0 8px 32px rgba(212, 175, 55, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+
+            50% {
+                box-shadow: 0 8px 40px rgba(212, 175, 55, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            }
         }
 
         .score-label {
@@ -171,16 +190,24 @@
         }
 
         @keyframes comboPulse {
-            0% { transform: scale(0.5); }
-            50% { transform: scale(1.15); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(0.5);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .combo-text {
             font-family: 'Lalezar', cursive;
             font-size: clamp(12px, 3vw, 18px);
             color: white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
         }
 
         /* Coal Heat Meter */
@@ -209,7 +236,7 @@
         .heat-meter {
             width: clamp(16px, 4vw, 24px);
             height: clamp(100px, 20vh, 200px);
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             border: 2px solid var(--gold);
             border-radius: 12px;
             overflow: hidden;
@@ -238,13 +265,18 @@
             left: 0;
             right: 0;
             height: 30%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.7), transparent);
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), transparent);
             animation: heatGlow 0.5s ease-in-out infinite alternate;
         }
 
         @keyframes heatGlow {
-            from { opacity: 0.5; }
-            to { opacity: 1; }
+            from {
+                opacity: 0.5;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         /* Tap Zone */
@@ -266,8 +298,8 @@
             box-shadow:
                 0 0 40px rgba(212, 175, 55, 0.4),
                 0 0 80px rgba(255, 107, 53, 0.2),
-                inset 0 -5px 20px rgba(0,0,0,0.5),
-                inset 0 5px 20px rgba(255,255,255,0.15);
+                inset 0 -5px 20px rgba(0, 0, 0, 0.5),
+                inset 0 5px 20px rgba(255, 255, 255, 0.15);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -280,8 +312,15 @@
         }
 
         @keyframes tapButtonPulse {
-            0%, 100% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.4), 0 0 80px rgba(255, 107, 53, 0.2), inset 0 -5px 20px rgba(0,0,0,0.5), inset 0 5px 20px rgba(255,255,255,0.15); }
-            50% { box-shadow: 0 0 50px rgba(212, 175, 55, 0.6), 0 0 100px rgba(255, 107, 53, 0.3), inset 0 -5px 20px rgba(0,0,0,0.5), inset 0 5px 20px rgba(255,255,255,0.15); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 40px rgba(212, 175, 55, 0.4), 0 0 80px rgba(255, 107, 53, 0.2), inset 0 -5px 20px rgba(0, 0, 0, 0.5), inset 0 5px 20px rgba(255, 255, 255, 0.15);
+            }
+
+            50% {
+                box-shadow: 0 0 50px rgba(212, 175, 55, 0.6), 0 0 100px rgba(255, 107, 53, 0.3), inset 0 -5px 20px rgba(0, 0, 0, 0.5), inset 0 5px 20px rgba(255, 255, 255, 0.15);
+            }
         }
 
         .tap-button:active {
@@ -289,8 +328,8 @@
             box-shadow:
                 0 0 60px rgba(255, 107, 53, 0.7),
                 0 0 100px rgba(255, 217, 61, 0.4),
-                inset 0 -2px 10px rgba(0,0,0,0.4),
-                inset 0 2px 10px rgba(255,255,255,0.1);
+                inset 0 -2px 10px rgba(0, 0, 0, 0.4),
+                inset 0 2px 10px rgba(255, 255, 255, 0.1);
             animation: none;
         }
 
@@ -326,6 +365,7 @@
                 opacity: 1;
                 transform: translateY(0) scale(1);
             }
+
             100% {
                 opacity: 0;
                 transform: translateY(-80px) scale(1.4);
@@ -368,8 +408,15 @@
         }
 
         @keyframes startBgPulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
         }
 
         .start-screen.hidden {
@@ -392,8 +439,17 @@
         }
 
         @keyframes titlePulse {
-            0%, 100% { transform: scale(1); text-shadow: 0 0 30px rgba(212, 175, 55, 0.6), 0 0 60px rgba(212, 175, 55, 0.3), 0 4px 0 var(--burgundy); }
-            50% { transform: scale(1.02); text-shadow: 0 0 40px rgba(212, 175, 55, 0.8), 0 0 80px rgba(212, 175, 55, 0.4), 0 4px 0 var(--burgundy); }
+
+            0%,
+            100% {
+                transform: scale(1);
+                text-shadow: 0 0 30px rgba(212, 175, 55, 0.6), 0 0 60px rgba(212, 175, 55, 0.3), 0 4px 0 var(--burgundy);
+            }
+
+            50% {
+                transform: scale(1.02);
+                text-shadow: 0 0 40px rgba(212, 175, 55, 0.8), 0 0 80px rgba(212, 175, 55, 0.4), 0 4px 0 var(--burgundy);
+            }
         }
 
         .game-subtitle {
@@ -419,8 +475,15 @@
         }
 
         @keyframes shishaFloat {
-            0%, 100% { transform: translateY(0) rotate(-2deg); }
-            50% { transform: translateY(-10px) rotate(2deg); }
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(-2deg);
+            }
+
+            50% {
+                transform: translateY(-10px) rotate(2deg);
+            }
         }
 
         .instructions {
@@ -462,13 +525,14 @@
             margin-top: clamp(12px, 2vh, 30px);
             transition: all 0.3s ease;
             box-shadow:
-                0 8px 30px rgba(0,0,0,0.4),
+                0 8px 30px rgba(0, 0, 0, 0.4),
                 0 0 30px rgba(212, 175, 55, 0.2);
             position: relative;
             z-index: 1;
         }
 
-        .start-button:hover, .start-button:active {
+        .start-button:hover,
+        .start-button:active {
             transform: scale(1.05);
             box-shadow:
                 0 0 50px rgba(212, 175, 55, 0.6),
@@ -539,6 +603,32 @@
             opacity: 0.5;
         }
 
+        /* Restart Game Button */
+        .restart-game-btn {
+            position: fixed;
+            bottom: clamp(10px, 2vh, 30px);
+            right: clamp(8px, 2vw, 20px);
+            width: clamp(36px, 10vw, 50px);
+            height: clamp(36px, 10vw, 50px);
+            border-radius: 50%;
+            background: rgba(114, 47, 55, 0.4);
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 30;
+            font-size: clamp(18px, 5vw, 24px);
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .restart-game-btn:active {
+            transform: scale(0.9);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+        }
+
         /* Coal Tap Button */
         .coal-button {
             position: fixed;
@@ -564,8 +654,15 @@
         }
 
         @keyframes coalPulse {
-            0%, 100% { box-shadow: 0 0 25px rgba(255, 107, 53, 0.4), 0 0 50px rgba(255, 107, 53, 0.2), inset 0 2px 10px rgba(255, 255, 255, 0.1); }
-            50% { box-shadow: 0 0 35px rgba(255, 107, 53, 0.6), 0 0 70px rgba(255, 107, 53, 0.3), inset 0 2px 10px rgba(255, 255, 255, 0.1); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 25px rgba(255, 107, 53, 0.4), 0 0 50px rgba(255, 107, 53, 0.2), inset 0 2px 10px rgba(255, 255, 255, 0.1);
+            }
+
+            50% {
+                box-shadow: 0 0 35px rgba(255, 107, 53, 0.6), 0 0 70px rgba(255, 107, 53, 0.3), inset 0 2px 10px rgba(255, 255, 255, 0.1);
+            }
         }
 
         .coal-button:active {
@@ -614,8 +711,17 @@
         }
 
         @keyframes perfectZonePulse {
-            0%, 100% { border-color: rgba(212, 175, 55, 0.3); box-shadow: none; }
-            50% { border-color: rgba(212, 175, 55, 0.6); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
+
+            0%,
+            100% {
+                border-color: rgba(212, 175, 55, 0.3);
+                box-shadow: none;
+            }
+
+            50% {
+                border-color: rgba(212, 175, 55, 0.6);
+                box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+            }
         }
 
         .perfect-label {
@@ -661,8 +767,17 @@
         }
 
         @keyframes gameOverBg {
-            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                opacity: 0.6;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
         }
 
         .game-over.active {
@@ -671,8 +786,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .game-over-title {
@@ -697,8 +817,15 @@
         }
 
         @keyframes scoreReveal {
-            from { transform: scale(0.5); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .score-message {
@@ -764,8 +891,15 @@
         }
 
         @keyframes selectedPulse {
-            0%, 100% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.4), inset 0 0 20px rgba(212, 175, 55, 0.1); }
-            50% { box-shadow: 0 0 35px rgba(212, 175, 55, 0.6), inset 0 0 25px rgba(212, 175, 55, 0.15); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 25px rgba(212, 175, 55, 0.4), inset 0 0 20px rgba(212, 175, 55, 0.1);
+            }
+
+            50% {
+                box-shadow: 0 0 35px rgba(212, 175, 55, 0.6), inset 0 0 25px rgba(212, 175, 55, 0.15);
+            }
         }
 
         .flavor-emoji {
@@ -787,7 +921,7 @@
 
         .start-button:disabled:hover {
             transform: none;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
         }
 
         /* Signature Footer */
@@ -813,8 +947,15 @@
         }
 
         @keyframes heartBeat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
         }
 
         /* Media query for very small screens */
@@ -822,15 +963,19 @@
             .instructions {
                 padding: 8px 12px;
             }
+
             .instruction-item {
                 margin: 4px 0;
             }
+
             .flavor-grid {
                 gap: 4px;
             }
+
             .flavor-btn {
                 padding: 6px 4px;
             }
+
             .shisha-emoji img {
                 width: 50px;
             }
@@ -845,38 +990,46 @@
                 align-items: center;
                 gap: 10px;
             }
+
             .game-title {
                 width: 100%;
                 margin-bottom: 0;
             }
+
             .game-subtitle {
                 width: 100%;
                 margin-bottom: 10px;
             }
+
             .shisha-emoji {
                 display: none;
             }
+
             .instructions {
                 flex: 1;
                 margin: 5px;
             }
+
             .flavor-selection {
                 flex: 1;
                 margin: 5px;
             }
+
             .start-button {
                 margin-top: 10px;
             }
         }
     </style>
 </head>
+
 <body>
     <!-- Start Screen -->
     <div class="start-screen" id="startScreen">
         <div class="game-title">أحمد الشياش</div>
         <div class="game-subtitle">Ahmed Chayech - لعبة الشيشة التونسية 💨</div>
         <div class="shisha-emoji">
-            <img src="https://imgproxy.attic.sh/insecure/f:png/plain/https://attic.sh/654dtcxvzmon7gyi7a86orpqxxr5" width="100px"/>
+            <img src="https://imgproxy.attic.sh/insecure/f:png/plain/https://attic.sh/654dtcxvzmon7gyi7a86orpqxxr5"
+                width="100px" />
         </div>
         <div class="instructions">
             <div class="instruction-item">
@@ -935,7 +1088,7 @@
     <div id="game-container">
         <div id="canvas-container"></div>
         <div class="pattern-overlay"></div>
-        
+
         <!-- UI -->
         <div class="game-ui">
             <div class="top-bar">
@@ -955,6 +1108,9 @@
 
         <!-- Sound Toggle -->
         <div class="sound-toggle" id="soundToggle">🔊</div>
+
+        <!-- Restart Game Button -->
+        <div class="restart-game-btn" id="inGameRestartBtn">🔄</div>
 
         <!-- Heat Meter -->
         <div class="heat-container">
@@ -1004,9 +1160,9 @@
 
             async init() {
                 if (this.initialized) return;
-                
+
                 await Tone.start();
-                
+
                 // Reverb for ambient feel
                 this.reverb = new Tone.Reverb({
                     decay: 2,
@@ -1137,7 +1293,7 @@
                 const notes = ['G2', 'A2', 'B2', 'C3', 'D3'];
                 const note = notes[Math.floor(Math.random() * notes.length)];
                 this.bubbleSynth.triggerAttackRelease(note, '16n');
-                
+
                 // Multiple bubbles effect
                 setTimeout(() => {
                     if (!this.muted) {
@@ -1343,6 +1499,7 @@
         const finalScore = document.getElementById('finalScore');
         const scoreMessage = document.getElementById('scoreMessage');
         const soundToggle = document.getElementById('soundToggle');
+        const inGameRestartBtn = document.getElementById('inGameRestartBtn');
         const flavorGrid = document.getElementById('flavorGrid');
         const flavorButtons = document.querySelectorAll('.flavor-btn');
 
@@ -1353,13 +1510,13 @@
 
         function initThreeJS() {
             const container = document.getElementById('canvas-container');
-            
+
             scene = new THREE.Scene();
-            
+
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(0, 2, 6);
             camera.lookAt(0, 1, 0);
-            
+
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -1467,7 +1624,7 @@
             // Coal pieces on top
             const coalGroup = new THREE.Group();
             const coalGeometry = new THREE.BoxGeometry(0.15, 0.15, 0.15);
-            
+
             for (let i = 0; i < 4; i++) {
                 const coalMaterial = new THREE.MeshPhongMaterial({
                     color: 0x1a1a1a,
@@ -1502,7 +1659,7 @@
         function createCoalEmbers() {
             // Create ember particles around the coal area
             const emberGeometry = new THREE.SphereGeometry(0.02, 8, 8);
-            
+
             for (let i = 0; i < 20; i++) {
                 const emberMaterial = new THREE.MeshBasicMaterial({
                     color: new THREE.Color().setHSL(0.05, 1, 0.5 + Math.random() * 0.3),
@@ -1570,7 +1727,7 @@
             };
             scene.add(ring);
             smokeRings.push(ring);
-            
+
             gameState.rings++;
             ringCounter.textContent = `حلقات: ${gameState.rings} 💨`;
         }
@@ -1606,7 +1763,7 @@
             const basePoints = 10;
             const comboMultiplier = Math.max(1, gameState.combo);
             const points = basePoints * comboMultiplier;
-            
+
             gameState.score += points;
             gameState.combo++;
             gameState.maxCombo = Math.max(gameState.maxCombo, gameState.combo);
@@ -1703,7 +1860,7 @@
 
         function updateHeatDisplay() {
             heatFill.style.height = `${gameState.heat}%`;
-            
+
             // Update coal glow based on heat
             if (shisha && shisha.userData.coals) {
                 const intensity = 0.2 + (gameState.heat / 100) * 0.6;
@@ -1736,7 +1893,7 @@
             msg.style.left = `${x}px`;
             msg.style.top = `${y}px`;
             document.body.appendChild(msg);
-            
+
             setTimeout(() => {
                 msg.remove();
             }, 1500);
@@ -1806,7 +1963,7 @@
             }
 
             finalScore.textContent = gameState.score.toLocaleString();
-            
+
             // Set message based on score
             if (gameState.score > 1000) {
                 scoreMessage.textContent = "محترف شيشة! 👑 أحمد يفتخر بيك!";
@@ -1982,6 +2139,13 @@
             soundToggle.classList.toggle('muted', muted);
         });
 
+        // Restart Game Button
+        inGameRestartBtn.addEventListener('click', startGame);
+        inGameRestartBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startGame();
+        });
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initThreeJS();
@@ -1989,4 +2153,5 @@
         });
     </script>
 </body>
+
 </html>
